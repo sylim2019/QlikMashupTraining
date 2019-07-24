@@ -1,4 +1,8 @@
 QlikMashupTraining.qext;
 QlikMashupTraining.html;
 QlikMashupTraining.js;
-QlikMashupTraining.css
+QlikMashupTraining.css;
+card.html;
+default-dashboard.jpg;
+echarts.min.js;
+cardReloadTemplate.html

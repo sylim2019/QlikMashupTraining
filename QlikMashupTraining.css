@@ -4,6 +4,12 @@
 	margin: 0 45px 45px 0;
 }
 
+.container-fluid {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 10px 40px 40px 0;
+}
+
 .qvplaceholder, .qvobject {
 	flex: 1 1 auto;
 	height: 300px;
@@ -48,4 +54,20 @@
 
 #popupText {
 	margin-right: 23px;
+}
+
+.card-title {
+	font-size: 15px;
+}
+
+.card-text {
+	font-size: 10px;
+}
+
+.btn, .btn-group {
+	font-size: 5px;
+}
+
+.list-group-item {
+	font-size: 10px;
 }
