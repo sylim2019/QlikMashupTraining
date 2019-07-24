@@ -1,0 +1,2 @@
+# QlikMashupTraining
+Training Project
