@@ -1,6 +1,6 @@
 /*
  * Basic responsive mashup template
- * @owner Enter you name here (xxx)
+ * @owner Shin
  */
 /*
  *    Fill in host and port for Qlik engine
@@ -195,16 +195,17 @@ function subReloadApp(){
 	})
 	
 	newReloadTemplate.find('#reloadButton').on('click', function(){
+		console.log("Start Reload...");
+		var reloadStart = $("<div class='spinner-grow text-success' role='status'><span class='sr-only'>Loading...</span> </div>");// add reload gif
+		newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadStart);
 		var app = qlik.openApp('124bd22e-a960-4c8a-94e9-424aeb28341f', config);
+
 		app.doReload().then(function(){		
-			console.log("Start Reload...");
-			var reloadStart = $("<div class='spinner-grow text-success' role='status'><span class='sr-only'>Loading...</span> </div>");// add reload gif
-			newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadStart);
-			app.doSave();
-			console.log("End Reload...");
-			var reloadEnd = $("<button type='button' id='reloadButton' class='card-link btn-block btn btn-primary'>Reload</button>");// stop reload gif
-			newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadEnd);
-			
+			app.doSave().then(function(){
+				console.log("End Reload...");
+				//var reloadEnd = $("<button type='button' id='reloadButton' class='card-link btn-block btn btn-primary'>Reload</button>");// stop reload gif
+				newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadEnd);
+			});
 		});	
 	});	
 

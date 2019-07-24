@@ -71,3 +71,8 @@
 .list-group-item {
 	font-size: 10px;
 }
+
+.spinner-grow {
+	margin-left: auto;
+	margin-right: auto;
+}
