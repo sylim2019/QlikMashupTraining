@@ -19,7 +19,6 @@ require.config( {
 require( ["js/qlik", "text!/extensions/QlikMashupTraining/card.html","text!/extensions/QlikMashupTraining/cardReloadTemplate.html"]
 , function ( qlik, cardTemplate, cardReloadTemplate) {
 
-
 	qlik.setOnError( function ( error ) {
 		$( '#popupText' ).append( error.message + "<br>" );
 		$( '#popup' ).fadeIn( 1000 );
@@ -29,7 +28,7 @@ require( ["js/qlik", "text!/extensions/QlikMashupTraining/card.html","text!/exte
 	} );
 	
 //callbacks -- inserted here --
-	//open apps -- inserted here --
+//open apps -- inserted here --
 	//var app = qlik.openApp('9ce2eb87-2671-41c0-9347-c17fe4ee6134', config);
 
 	//QRS calls
@@ -47,7 +46,7 @@ require( ["js/qlik", "text!/extensions/QlikMashupTraining/card.html","text!/exte
 		}
 	})
 
-	//get objects -- inserted here --
+//get objects -- inserted here --
 	// Create nav action
 window.showChart = function(navActive){
 	// Home Page
@@ -71,13 +70,12 @@ window.showChart = function(navActive){
 	$(".nav-item").removeClass("active"); // find all active and remove
 	$("." + navActive).addClass("active");  // add active on selected nav
 };
-	
 // Button function
 window.openApp = function (param) {
 	console.log('Open' + param);
 	window.open("https://qsapitest/sense/app/" + param);
 };
-
+// Application tab
 function subGenAppList(){
 	applist.forEach(function (fieldValue) {
 
@@ -95,41 +93,44 @@ function subGenAppList(){
 			});
 		}else{
 			applist.forEach(function(rowCheck){
-				var option = $("<a class='dropdown-item'>" + rowCheck.name + "</a>");
-				option.on("click", function () {
-					//duplicate
-					var curDate = new Date();
-					$.ajax({
-						method: 'POST',
-						headers: {
-							"x-Qlik-Xrfkey": "1234567890abcdef"
-						},
-						url: "https://qsapitest/qrs/app/"+ rowCheck.id +"/copy?name="
-							+ rowCheck.name + "_bkp" + curDate.getFullYear() + curDate.getMonth() + curDate.getDate() //+ curDate.getHours() + curDate.getMinutes() + curDate.getSeconds() 
-							+ "&Xrfkey=1234567890abcdef",
-						success: function (response) {
-							alert("Press F5 to refresh list.");
-							//overwrite / publish
-							$.ajax({
-								method: 'PUT',
-								headers: {
-									"x-Qlik-Xrfkey": "1234567890abcdef"
-								},
-								url: "https://qsapitest/qrs/app/" + response.id + "/replace?app=" + rowCheck.id + "&Xrfkey=1234567890abcdef",
-								success: function (response) {
-									alert("Publish Success !");
-								}
-							})				
-						}
-					})
-				});	
-				newCard.find("#publish-dropdown").append(option);
+				if(rowCheck.published === true){ // only create published app list 
+					console.log("Button List :" + rowCheck.name);
+					var option = $("<a class='dropdown-item'>" + rowCheck.name + "</a>");
+					option.on("click", function () {
+						//duplicate
+						var curDate = new Date();
+						$.ajax({
+							method: 'POST',
+							headers: {
+								"x-Qlik-Xrfkey": "1234567890abcdef"
+							},
+							url: "https://qsapitest/qrs/app/"+ rowCheck.id +"/copy?name="
+								+ rowCheck.name + "_bkp" + curDate.getFullYear() + curDate.getMonth() + curDate.getDate() //+ curDate.getHours() + curDate.getMinutes() + curDate.getSeconds() 
+								+ "&Xrfkey=1234567890abcdef",
+							success: function (response) {
+								alert("Press F5 to refresh list.");
+								//overwrite / publish
+								$.ajax({
+									method: 'PUT',
+									headers: {
+										"x-Qlik-Xrfkey": "1234567890abcdef"
+									},
+									url: "https://qsapitest/qrs/app/" + response.id + "/replace?app=" + rowCheck.id + "&Xrfkey=1234567890abcdef",
+									success: function (response) {
+										alert("Publish Success !");
+									}
+								})				
+							}
+						})
+					});	
+					newCard.find("#publish-dropdown").append(option);
+				}
 			});
 		}			
 		$("#card-template").append(newCard);
 	});
 };
-
+// Task > Overview
 function subChartTree(){
 	var app = qlik.openApp('124bd22e-a960-4c8a-94e9-424aeb28341f', config);
 
@@ -149,7 +150,6 @@ function subChartTree(){
 			qWidth : 3
 		}]
 	}, function(reply) {
-		
 		var data = [];
 		reply.qHyperCube.qDataPages[0].qMatrix.forEach(function (qRow) {
 			var found;
@@ -174,10 +174,10 @@ function subChartTree(){
 					data.push(newProduct);
 				}
 			});
-			console.log(data);
+		console.log(data);
 	});
 };
-
+// Task > Schedule
 function subReloadApp(){
 
 	var newReloadTemplate = $(cardReloadTemplate);
@@ -195,20 +195,23 @@ function subReloadApp(){
 	})
 	
 	newReloadTemplate.find('#reloadButton').on('click', function(){
+		
 		console.log("Start Reload...");
+		
 		var reloadStart = $("<div class='spinner-grow text-success' role='status'><span class='sr-only'>Loading...</span> </div>");// add reload gif
 		newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadStart);
 		var app = qlik.openApp('124bd22e-a960-4c8a-94e9-424aeb28341f', config);
 
+		// Add loop for lineage reload
+
 		app.doReload().then(function(){		
 			app.doSave().then(function(){
 				console.log("End Reload...");
-				//var reloadEnd = $("<button type='button' id='reloadButton' class='card-link btn-block btn btn-primary'>Reload</button>");// stop reload gif
+				var reloadEnd = $("<button type='button' id='reloadButton' class='card-link btn-block btn btn-primary'>Reload</button>");// stop reload gif
 				newReloadTemplate.find(".cardReloadStatus").replaceWith(reloadEnd);
 			});
 		});	
 	});	
-
 	$("#card-template").append(newReloadTemplate);
 };
 	
